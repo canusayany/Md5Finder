@@ -1,3 +1,50 @@
+#运行环境
+.net9
+#使用方法
+```
+ private static async Task FindMd5PrefixAsync()
+ {
+     try
+     {
+         while (true)
+         {
+             Console.WriteLine("请输入目标MD5前缀：");
+             string targetPrefix = Console.ReadLine();
+
+             Console.WriteLine($"使用 {Environment.ProcessorCount} 个处理器核心开始查找...");
+             Stopwatch stopwatch = new Stopwatch();
+             stopwatch.Start();
+
+             string result = await Md5Finder.FindStringByMd5PrefixAsync(targetPrefix);
+
+             stopwatch.Stop();
+             Console.WriteLine($"计算时间: {stopwatch.ElapsedMilliseconds} 毫秒");
+
+             if (result != null)
+             {
+                 Console.WriteLine($"找到匹配字符串: {result}");
+                 using (var md5 = System.Security.Cryptography.MD5.Create())
+                 {
+                     byte[] inputBytes = System.Text.Encoding.UTF8.GetBytes(result);
+                     byte[] hashBytes = md5.ComputeHash(inputBytes);
+                     string md5Result = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                     Console.WriteLine($"其MD5值: {md5Result}");
+                 }
+             }
+             else
+             {
+                 Console.WriteLine("未找到匹配的字符串");
+             }
+
+             Console.WriteLine("\n按回车继续，按Ctrl+C退出...\n");
+         }
+     }
+     catch (Exception ex)
+     {
+         Console.WriteLine($"发生错误: {ex.Message}");
+     }
+ }
+```
 # Md5Finder
 第一版
 ```
